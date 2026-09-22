@@ -233,9 +233,9 @@ export function PublicaAiChat({ compact = false }: { compact?: boolean }) {
         </div>
 
         <PromptInput
-          onSubmit={(event) => {
+          onSubmit={(message, event) => {
             event.preventDefault();
-            send(input);
+            send(message.text ?? input);
           }}
         >
           <PromptInputTextarea
@@ -245,7 +245,7 @@ export function PublicaAiChat({ compact = false }: { compact?: boolean }) {
             placeholder="Ask about a government service…"
           />
           <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={ask.isPending ? "submitted" : undefined} />
+            <PromptInputSubmit {...(ask.isPending ? { status: "submitted" as const } : {})} />
           </PromptInputFooter>
         </PromptInput>
 
