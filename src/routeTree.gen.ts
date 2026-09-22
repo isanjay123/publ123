@@ -21,6 +21,7 @@ import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authen
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedApplicationsIndexRouteImport } from './routes/_authenticated/applications.index'
 import { Route as AuthenticatedApplicationsIdRouteImport } from './routes/_authenticated/applications.$id'
+import { Route as AuthenticatedApplyServiceSlugRouteImport } from './routes/_authenticated/apply.$serviceSlug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -84,6 +85,12 @@ const AuthenticatedApplicationsIdRoute =
     path: '/applications/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedApplyServiceSlugRoute =
+  AuthenticatedApplyServiceSlugRouteImport.update({
+    id: '/apply/$serviceSlug',
+    path: '/apply/$serviceSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/applications/$id': typeof AuthenticatedApplicationsIdRoute
+  '/apply/$serviceSlug': typeof AuthenticatedApplyServiceSlugRoute
   '/applications/': typeof AuthenticatedApplicationsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +117,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/applications/$id': typeof AuthenticatedApplicationsIdRoute
+  '/apply/$serviceSlug': typeof AuthenticatedApplyServiceSlugRoute
   '/applications': typeof AuthenticatedApplicationsIndexRoute
 }
 export interface FileRoutesById {
@@ -124,6 +133,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/applications/$id': typeof AuthenticatedApplicationsIdRoute
+  '/_authenticated/apply/$serviceSlug': typeof AuthenticatedApplyServiceSlugRoute
   '/_authenticated/applications/': typeof AuthenticatedApplicationsIndexRoute
 }
 export interface FileRouteTypes {
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/applications/$id'
+    | '/apply/$serviceSlug'
     | '/applications/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/applications/$id'
+    | '/apply/$serviceSlug'
     | '/applications'
   id:
     | '__root__'
@@ -166,6 +178,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/profile'
     | '/_authenticated/applications/$id'
+    | '/_authenticated/apply/$serviceSlug'
     | '/_authenticated/applications/'
   fileRoutesById: FileRoutesById
 }
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedApplicationsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/apply/$serviceSlug': {
+      id: '/_authenticated/apply/$serviceSlug'
+      path: '/apply/$serviceSlug'
+      fullPath: '/apply/$serviceSlug'
+      preLoaderRoute: typeof AuthenticatedApplyServiceSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -273,6 +293,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedApplicationsIdRoute: typeof AuthenticatedApplicationsIdRoute
+  AuthenticatedApplyServiceSlugRoute: typeof AuthenticatedApplyServiceSlugRoute
   AuthenticatedApplicationsIndexRoute: typeof AuthenticatedApplicationsIndexRoute
 }
 
@@ -281,6 +302,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedApplicationsIdRoute: AuthenticatedApplicationsIdRoute,
+  AuthenticatedApplyServiceSlugRoute: AuthenticatedApplyServiceSlugRoute,
   AuthenticatedApplicationsIndexRoute: AuthenticatedApplicationsIndexRoute,
 }
 
