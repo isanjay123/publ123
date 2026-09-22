@@ -115,7 +115,7 @@ function NotificationsPage() {
               <div className="flex gap-3">
                 <span className="mt-0.5">{iconFor(row.kind)}</span>
                 <div>
-                  <p className="flex flex-wrap items-center gap-2 font-medium">
+                  <div className="flex flex-wrap items-center gap-2 font-medium">
                     {row.title}
                     {!row.isRead ? (
                       <span className="h-2 w-2 rounded-full bg-primary" aria-label="Unread" />
@@ -125,7 +125,7 @@ function NotificationsPage() {
                         Demo
                       </Badge>
                     ) : null}
-                  </p>
+                  </div>
                   <p className="mt-1 text-sm text-muted-foreground">{row.body}</p>
                   <p className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                     <span>{formatDateTime(row.createdAt)}</span>
