@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      application_documents: {
+        Row: {
+          application_id: string
+          citizen_id: string
+          created_at: string
+          document_label: string
+          extracted: Json
+          file_name: string
+          file_size_bytes: number
+          id: string
+          is_demo: boolean
+          mime_type: string
+          pipeline: Json
+          verification_status: string
+        }
+        Insert: {
+          application_id: string
+          citizen_id: string
+          created_at?: string
+          document_label: string
+          extracted?: Json
+          file_name: string
+          file_size_bytes?: number
+          id?: string
+          is_demo?: boolean
+          mime_type?: string
+          pipeline?: Json
+          verification_status?: string
+        }
+        Update: {
+          application_id?: string
+          citizen_id?: string
+          created_at?: string
+          document_label?: string
+          extracted?: Json
+          file_name?: string
+          file_size_bytes?: number
+          id?: string
+          is_demo?: boolean
+          mime_type?: string
+          pipeline?: Json
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       application_status_history: {
         Row: {
           actor_label: string
@@ -56,6 +109,7 @@ export type Database = {
           created_at: string
           department_id: string
           expected_completion: string | null
+          form_data: Json
           id: string
           is_demo: boolean
           notes: string | null
@@ -71,6 +125,7 @@ export type Database = {
           created_at?: string
           department_id: string
           expected_completion?: string | null
+          form_data?: Json
           id?: string
           is_demo?: boolean
           notes?: string | null
@@ -86,6 +141,7 @@ export type Database = {
           created_at?: string
           department_id?: string
           expected_completion?: string | null
+          form_data?: Json
           id?: string
           is_demo?: boolean
           notes?: string | null
@@ -182,6 +238,7 @@ export type Database = {
       }
       notifications: {
         Row: {
+          application_number: string | null
           body: string
           created_at: string
           id: string
@@ -192,6 +249,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          application_number?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -202,6 +260,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          application_number?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -215,29 +274,41 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           created_at: string
           email: string | null
           full_name: string
           id: string
           locale: string
+          mfa_enabled: boolean
+          mfa_method: string | null
+          notification_prefs: Json
           phone: string | null
           updated_at: string
         }
         Insert: {
+          address?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
           id: string
           locale?: string
+          mfa_enabled?: boolean
+          mfa_method?: string | null
+          notification_prefs?: Json
           phone?: string | null
           updated_at?: string
         }
         Update: {
+          address?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
           id?: string
           locale?: string
+          mfa_enabled?: boolean
+          mfa_method?: string | null
+          notification_prefs?: Json
           phone?: string | null
           updated_at?: string
         }
@@ -346,6 +417,8 @@ export type Database = {
         | "approved"
         | "rejected"
         | "completed"
+        | "document_verification"
+        | "officer_review"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -489,6 +562,8 @@ export const Constants = {
         "approved",
         "rejected",
         "completed",
+        "document_verification",
+        "officer_review",
       ],
     },
   },

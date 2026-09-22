@@ -1,26 +1,44 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bell, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
 
 import { PublicaLogo } from "@/components/brand/Logo";
+import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { listNotifications } from "@/lib/notifications.functions";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/services", label: "Services" },
-  { to: "/transparency", label: "Transparency" },
-] as const;
+const PUBLIC_NAV: { to: string; key: TranslationKey }[] = [
+  { to: "/", key: "nav.home" },
+  { to: "/services", key: "nav.services" },
+  { to: "/ai-assistant", key: "nav.assistant" },
+  { to: "/transparency", key: "nav.transparency" },
+];
+
+const CITIZEN_NAV: { to: string; key: TranslationKey }[] = [
+  { to: "/applications", key: "nav.applications" },
+];
 
 export function SiteHeader() {
   const { isAuthenticated } = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
+
+  const notifications = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => listNotifications(),
+    enabled: isAuthenticated,
+  });
+  const unread = (notifications.data ?? []).filter((row) => !row.isRead && !row.isDemo).length;
+
+  const nav = isAuthenticated ? [...PUBLIC_NAV, ...CITIZEN_NAV] : PUBLIC_NAV;
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -36,8 +54,8 @@ export function SiteHeader() {
           <PublicaLogo />
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {NAV.map((item) => (
+        <nav className="hidden items-center gap-1 lg:flex">
+          {nav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -45,40 +63,49 @@ export function SiteHeader() {
               activeProps={{ className: "bg-muted text-foreground" }}
               activeOptions={{ exact: item.to === "/" }}
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSelector className="hidden h-9 w-[150px] lg:flex" />
           <ThemeToggle />
           {isAuthenticated ? (
-            <div className="hidden items-center gap-2 md:flex">
+            <div className="hidden items-center gap-2 lg:flex">
+              <Button asChild variant="ghost" size="icon" className="relative">
+                <Link to="/notifications" aria-label={t("nav.notifications")}>
+                  <Bell className="h-4 w-4" />
+                  {unread > 0 ? (
+                    <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
+                  ) : null}
+                </Link>
+              </Button>
               <Button asChild variant="outline" size="sm">
                 <Link to="/dashboard">
                   <LayoutDashboard className="mr-1.5 h-4 w-4" />
-                  Dashboard
+                  {t("nav.dashboard")}
                 </Link>
               </Button>
               <Button asChild variant="ghost" size="sm">
                 <Link to="/profile">
                   <UserRound className="mr-1.5 h-4 w-4" />
-                  Profile
+                  {t("nav.profile")}
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" onClick={signOut}>
                 <LogOut className="mr-1.5 h-4 w-4" />
-                Sign out
+                {t("action.signOut")}
               </Button>
             </div>
           ) : (
-            <div className="hidden items-center gap-2 md:flex">
+            <div className="hidden items-center gap-2 lg:flex">
               <Button asChild variant="ghost" size="sm">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/auth">{t("action.signIn")}</Link>
               </Button>
               <Button asChild size="sm">
                 <Link to="/auth" search={{ mode: "register" }}>
-                  Create account
+                  {t("action.createAccount")}
                 </Link>
               </Button>
             </div>
@@ -86,7 +113,7 @@ export function SiteHeader() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             aria-label="Toggle navigation"
             onClick={() => setOpen((value) => !value)}
           >
@@ -95,16 +122,16 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className={cn("border-t border-border md:hidden", open ? "block" : "hidden")}>
+      <div className={cn("border-t border-border lg:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-4 py-3">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
           {isAuthenticated ? (
@@ -114,20 +141,28 @@ export function SiteHeader() {
                 onClick={() => setOpen(false)}
                 className="rounded-md px-3 py-2 text-sm font-medium"
               >
-                Dashboard
+                {t("nav.dashboard")}
+              </Link>
+              <Link
+                to="/notifications"
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium"
+              >
+                {t("nav.notifications")}
+                {unread > 0 ? ` (${unread})` : ""}
               </Link>
               <Link
                 to="/profile"
                 onClick={() => setOpen(false)}
                 className="rounded-md px-3 py-2 text-sm font-medium"
               >
-                Profile
+                {t("nav.profile")}
               </Link>
               <button
                 onClick={signOut}
                 className="rounded-md px-3 py-2 text-left text-sm font-medium text-destructive"
               >
-                Sign out
+                {t("action.signOut")}
               </button>
             </>
           ) : (
@@ -136,9 +171,12 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2 text-sm font-medium"
             >
-              Sign in
+              {t("action.signIn")}
             </Link>
           )}
+          <div className="px-3 pt-2">
+            <LanguageSelector className="h-9 w-full" />
+          </div>
         </div>
       </div>
     </header>

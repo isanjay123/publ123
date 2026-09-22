@@ -80,6 +80,10 @@ export const askPublicaAi = createServerFn({ method: "POST" })
       description: service.description,
       department: service.department.name,
       keywords: [service.slug.replace(/-/g, " "), ...service.requiredDocuments],
+      processingTimeDays: service.processingTimeDays,
+      slaDays: service.slaDays,
+      feeCents: service.feeCents,
+      requiredDocuments: service.requiredDocuments,
     }));
     return getAiAssistant().ask(data.question, hints);
   });
